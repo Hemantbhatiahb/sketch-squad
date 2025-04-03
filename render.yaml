@@ -1,0 +1,26 @@
+
+services:
+  # Frontend web service
+  - type: web
+    name: draw-and-guess-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_SOCKET_SERVER_URL
+        fromService:
+          name: draw-and-guess-backend
+          type: web
+          property: url
+
+  # Backend socket.io service
+  - type: web
+    name: draw-and-guess-backend
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    healthCheckPath: /
